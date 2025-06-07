@@ -1,51 +1,51 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const OrderSchema = new mongoose.Schema({
-    userId : {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: 'User'
-    },
-    products: [{
-        prodId: {
-            type: Number,
-            required: true
-        },
-        quantity: {
-            type: Number,
-            required: true,
-            min: 1,
-            default: 1
-        },
-        wholesale: Number,
-        retail: Number,
-        name: String
-    }],
-    bill: {
-        type: Number,
-        required: true,
-        default: 0
-    }, 
-    paymentId: {
-        type: String,
-        required: true,
-    },
-    address: {
-        type: String,
-        required: true,
-    },
-    phone: {
-        type: String,
-        required: true,
-    },
-    status: {
-        type: String,
-        required: true,
-        enum: ['Pending', 'Paid', 'Failed', 'Confirmed'],
-        default: 'Confirmed'
-    }
-}, {
-    timestamps: true
-})
+const orderSchema = new mongoose.Schema({
+  orderId: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  merchantOrderId: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  amount: {
+    type: Number,
+    required: true
+  },
+  currency: {
+    type: String,
+    default: 'INR'
+  },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  status: {
+    type: String,
+    enum: ['PENDING', 'SUCCESS', 'FAILED', 'CANCELLED'],
+    default: 'PENDING'
+  },
+  phonepeTransactionId: String,
+  paymentMethod: String,
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
+  }
+});
 
-module.exports = Cart = mongoose.model("order", OrderSchema);
+orderSchema.pre('save', function(next) {
+  this.updatedAt = Date.now();
+  next();
+});
+
+const Order = mongoose.model('order', orderSchema);
+
+module.exports = Order;

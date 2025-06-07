@@ -84,6 +84,8 @@ app.use("/api/auth", require("./routes/api/auth"));
 app.use("/api/cart", require("./routes/api/cart"));
 app.use("/api/prod", require("./routes/api/products"));
 app.use("/api/order", require("./routes/api/orders"));
+app.use('/api/payment', require("./routes/api/payment"));
+
 
 // Serve static assets in production
 if (process.env.NODE_ENV === "production") {
@@ -95,6 +97,6 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
