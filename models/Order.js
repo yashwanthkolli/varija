@@ -1,10 +1,10 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const OrderSchema = new mongoose.Schema({
-    userId : {
-        type: mongoose.Schema.Types.ObjectId,
+const orderSchema = new mongoose.Schema({
+    merchantOrderId: {
+        type: String,
         required: true,
-        ref: 'User'
+        unique: true
     },
     products: [{
         prodId: {
@@ -21,31 +21,49 @@ const OrderSchema = new mongoose.Schema({
         retail: Number,
         name: String
     }],
-    bill: {
+    amount: {
         type: Number,
-        required: true,
-        default: 0
-    }, 
-    paymentId: {
+        required: true
+    },
+    currency: {
         type: String,
-        required: true,
+        default: 'INR'
+    },
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     },
     address: {
         type: String,
-        required: true,
+        required: true
     },
     phone: {
         type: String,
-        required: true,
+        required: true
     },
     status: {
         type: String,
-        required: true,
-        enum: ['Pending', 'Paid', 'Failed', 'Confirmed'],
-        default: 'Confirmed'
+        enum: ['PENDING', 'SUCCESS', 'FAILED', 'CANCELLED'],
+        default: 'PENDING'
+    },
+    phonepeTransactionId: String,
+    paymentMethod: String,
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now
     }
-}, {
-    timestamps: true
-})
+});
 
-module.exports = Cart = mongoose.model("order", OrderSchema);
+orderSchema.pre('save', function(next) {
+    this.updatedAt = Date.now();
+    next();
+});
+
+const Order = mongoose.model('Order', orderSchema);
+
+module.exports = Order;

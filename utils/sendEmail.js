@@ -1,28 +1,28 @@
 const nodemailer = require('nodemailer');
+const Mailgun = require('mailgun.js');
+const FormData = require('form-data');
 
-const sendEmail = async options => {
-  // 1) Create a transporter
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT,
-    auth: {
-      user: process.env.SMTP_EMAIL,
-      pass: process.env.SMTP_PASSWORD
-    }
+const sendEmail = async () => {
+  const mailgun = new Mailgun(FormData);
+  const mg = mailgun.client({
+    username: "api",
+    key: process.env.MAILGUN_API,
+    // When you have an EU-domain, you must specify the endpoint:
+    // url: "https://api.eu.mailgun.net"
   });
 
-  // 2) Define the email options
-  const mailOptions = {
-    from: `${process.env.FROM_NAME} <${process.env.FROM_EMAIL}>`,
-    to: options.email,
-    subject: options.subject,
-    text: options.message,
-    contentType: 'text/html'
-    // html: options.html (you can add HTML email templates later)
-  };
+  try {
+    const data = await mg.messages.create("sandbox6a3d278399c140e885be35b9876041f1.mailgun.org", {
+      from: "Mailgun Sandbox <postmaster@sandbox6a3d278399c140e885be35b9876041f1.mailgun.org>",
+      to: ["Yashwanth Kolli <yashwanthkolli3271@gmail.com>"],
+      subject: "Hello Yashwanth Kolli",
+      text: "Congratulations Yashwanth Kolli, you just sent an email with Mailgun! You are truly awesome!",
+    });
 
-  // 3) Actually send the email
-  await transporter.sendMail(mailOptions);
+     console.log(data); // logs response data
+  } catch (error) {
+    console.log(error); //logs any error
+  }
 };
 
 module.exports = sendEmail;
