@@ -50,6 +50,11 @@ const orderSchema = new mongoose.Schema({
         enum: ['PENDING', 'SUCCESS', 'FAILED', 'CANCELLED', 'COMPLETED'],
         default: 'PENDING'
     },
+    deliveryStatus: {
+        type: String,
+        enum: ['PROCESSING', 'CONFIRMED', 'OUT FOR DELIVERRY', 'DELIVERED', 'CANCELLED'],
+        default: 'PROCESSING'
+    },
     phonepeTransactionId: String,
     paymentMethod: String,
     createdAt: {
