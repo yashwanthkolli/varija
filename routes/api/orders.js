@@ -4,23 +4,23 @@ const razorpayInstance  =  require('../../config/razorpay');
 const auth = require('../../middleware/auth');
 
 const Order = require('../../models/Order');
-const Cart = require('../../models/Cart')
 
-// @route    POST api/order/
-// @desc     Payment RazorPay
+// @route    GET api/order/
+// @desc     Get user orders
 // @access   Public
-router.post('/', async (req, res) => {
-    try{
-        const options = {
-            amount: req.body.amount*100,
-            currency: 'INR'
-        }
+router.get('/', auth, async (req, res) => {
+    const userId = req.user.id;
 
-        const order = await razorpayInstance.orders.create(options);
-        res.status(200).json(order);
+    try {
+        const orders = await Order.find({ userId, status: 'COMPLETED' });
+        if (orders && orders.length > 0) {
+            res.status(200).send(orders);
+        } else {
+            res.send(null);
+        }
     } catch (err) {
-        console.error(err);
-        res.status(500).send('Error creating RazorPay order');
+        console.error(err.message);
+        res.status(500).send("Server Error");
     }
 })
 
