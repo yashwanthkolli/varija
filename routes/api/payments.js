@@ -9,14 +9,14 @@ const Cart = require('../../models/Cart');
 
 router.post('/initiate', async (req, res) => {
   try {
-    const { amount, userId, products, address, phone } = req.body;
+    const { amount, userId, products, address, phone, redirect } = req.body;
     
     if (!amount || amount <= 0) {
       return res.status(400).json({ error: 'Invalid amount' });
     }
 
     const merchantOrderId = `ORDER_${uuidv4()}`;
-    const redirectUrl = `${process.env.MERCHANT_REDIRECT_URL}status/${merchantOrderId}`;
+    const redirectUrl = redirect ? redirect : `${process.env.MERCHANT_REDIRECT_URL}status/${merchantOrderId}`;
 
     const request = StandardCheckoutPayRequest.builder()
       .merchantOrderId(merchantOrderId)
