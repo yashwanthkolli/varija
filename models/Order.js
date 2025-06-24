@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
+    orderId: {
+        type: String,
+        unique: true
+    },
     merchantOrderId: {
         type: String,
         required: true,
