@@ -85,6 +85,7 @@ router.get('/status/:orderId', async (req, res) => {
 
 // Handle PhonePe callback
 router.post('/callback', async (req, res) => {
+  console.log('oyyy, oyy')
   try {
     const authorizationHeader = req.headers['authorization'] || req.headers['Authorization'];
     const responseBody = JSON.stringify(req.body);
