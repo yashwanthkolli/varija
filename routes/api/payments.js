@@ -4,7 +4,8 @@ const { v4: uuidv4 } = require('uuid');
 const phonePeClient = require('../../utils/phonepeClient');
 const { StandardCheckoutPayRequest, CreateSdkOrderRequest } = require('pg-sdk-node');
 
-const Order = require('../../models/Order')
+const Order = require('../../models/Order');
+const Cart = require('../../models/Cart');
 
 router.post('/initiate', async (req, res) => {
   try {
@@ -51,8 +52,25 @@ router.get('/status/:orderId', async (req, res) => {
 
     const response = await phonePeClient.getClient().getOrderStatus(orderId);
     
-    // Update order status in your database based on response.state
-    // await updateOrderStatus(orderId, response.state);
+    // Update order status
+    let order = await Order.findOne({merchantOrderId: orderId})
+    if(!order) throw new Error('Order not found');
+    if(!order.orderId) {
+      order = await Order.findOneAndUpdate({merchantOrderId: orderId}, {
+        orderId: response.orderId,
+        status: response.state,
+        phonepeTransactionId: response.paymentDetails[0].transactionId,
+        paymentMethod: response.paymentDetails[0].paymentMode
+      }, {
+        new: true,
+        runValidators: true
+      })
+
+      // Empty User Cart
+      if (response.state === 'COMPLETED') {
+        await Cart.findOneAndUpdate({userId: order.userId}, {products: [], bill: 0}, {new: true, runValidators: true})
+      }
+    }
 
     res.json({
       success: true,

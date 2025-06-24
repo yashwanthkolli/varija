@@ -48,7 +48,7 @@ const orderSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['PENDING', 'SUCCESS', 'FAILED', 'CANCELLED'],
+        enum: ['PENDING', 'SUCCESS', 'FAILED', 'CANCELLED', 'COMPLETED'],
         default: 'PENDING'
     },
     phonepeTransactionId: String,
