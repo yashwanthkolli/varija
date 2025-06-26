@@ -104,7 +104,7 @@ router.post('/callback', async (req, res) => {
     const callbackData = req.body;
     const orderId = callbackData.payload.merchantOrderId;
     const status = callbackData.payload.state;
-    
+
     let order = await Order.findOne({merchantOrderId: orderId})
     if(!order) throw new Error('Order not found');
     if(!order.orderId) {
@@ -119,7 +119,7 @@ router.post('/callback', async (req, res) => {
       })
 
       // Empty User Cart
-      if (response.state === 'COMPLETED') {
+      if (status === 'COMPLETED') {
         await Cart.findOneAndUpdate({userId: order.userId}, {products: [], bill: 0}, {new: true, runValidators: true})
       }
     }
