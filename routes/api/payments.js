@@ -20,7 +20,7 @@ router.post('/initiate', async (req, res) => {
 
     const request = StandardCheckoutPayRequest.builder()
       .merchantOrderId(merchantOrderId)
-      .amount(amount * 100) // PhonePe expects amount in paise
+      .amount(1 * 100) // PhonePe expects amount in paise
       .redirectUrl(redirectUrl)
       .build();
 
@@ -85,7 +85,6 @@ router.get('/status/:orderId', async (req, res) => {
 
 // Handle PhonePe callback
 router.post('/callback', async (req, res) => {
-  console.log('oyyy, oyy')
   try {
     const authorizationHeader = req.headers['authorization'] || req.headers['Authorization'];
     const responseBody = JSON.stringify(req.body);
@@ -105,9 +104,25 @@ router.post('/callback', async (req, res) => {
     const callbackData = req.body;
     const orderId = callbackData.payload.merchantOrderId;
     const status = callbackData.payload.state;
+    
+    let order = await Order.findOne({merchantOrderId: orderId})
+    if(!order) throw new Error('Order not found');
+    if(!order.orderId) {
+      order = await Order.findOneAndUpdate({merchantOrderId: orderId}, {
+        orderId: orderId,
+        status: status,
+        phonepeTransactionId: callbackData.payload.paymentDetails[0].transactionId,
+        paymentMethod: callbackData.payload.paymentDetails[0].paymentMode
+      }, {
+        new: true,
+        runValidators: true
+      })
 
-    console.log('orderId:', orderId)
-    console.log('status:', status)
+      // Empty User Cart
+      if (response.state === 'COMPLETED') {
+        await Cart.findOneAndUpdate({userId: order.userId}, {products: [], bill: 0}, {new: true, runValidators: true})
+      }
+    }
     // Update your database with the payment status
     // await updateOrderStatus(orderId, status);
 
