@@ -12,7 +12,7 @@ router.get('/', auth, async (req, res) => {
     const userId = req.user.id;
 
     try {
-        const orders = await Order.find({ userId, status: 'COMPLETED' });
+        const orders = await Order.find({ userId, status: 'COMPLETED' }).sort({createdAt: -1});
         if (orders && orders.length > 0) {
             res.status(200).send(orders);
         } else {
