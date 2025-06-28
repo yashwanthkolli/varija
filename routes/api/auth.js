@@ -5,6 +5,7 @@ const auth = require("../../middleware/auth");
 const jwt = require("jsonwebtoken");
 const config = require("config");
 const sendEmail = require("../../utils/sendEmail");
+const sendMailjet = require("../../utils/mailjet");
 const crypto = require("crypto");
 const { check, validationResult } = require("express-validator");
 
@@ -93,6 +94,15 @@ router.get("/user", auth, async (req, res) => {
   }
 });
 
+router.get("/cp", async (req, res) => {
+  try {
+    const data = sendMailjet()
+    res.status(200).send(data)
+  } catch (err) {
+    console.log(err)
+  }
+})
+
 // @desc    Forgot password
 // @route   POST /api/auth/changepassword
 // @access  Public
@@ -112,8 +122,9 @@ router.post("/changepassword", async (req, res) => {
 
     const message = `You are receiving this email because you (or someone else) has requested the reset of a password for your RiceHouse account. Please make a request to: \n\n ${resetUrl}`;
 
-    await sendEmail({
-      email: user.phone,
+    await sendMailjet({
+      mail: user.phone,
+      name: user.name,
       subject: 'Password reset token',
       message
     });
