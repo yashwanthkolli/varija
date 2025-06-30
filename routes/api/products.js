@@ -66,4 +66,23 @@ router.post("/", authenticateAdmin, async (req,  res) => {
     }
 });
 
+router.put('/:id', authenticateAdmin, async(req, res) => {
+    const prodId = req.params.id;
+    const updates = req.body;
+
+    try {
+        const product = await Product.findByIdAndUpdate(prodId, updates, {
+        new: true, // return updated doc
+        runValidators: true,
+        });
+
+        if (!product) return res.status(404).json({ message: "Product not found" });
+
+        res.json({ message: "Product updated successfully", product });
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: "Failed to update product", error });
+    }
+})
+
 module.exports = router;

@@ -45,7 +45,7 @@ const ProductSchema = new mongoose.Schema({
         type: String,
         required: true
     }, 
-    diabled: {
+    disabled: {
         type: Boolean,
         default: false
     }
