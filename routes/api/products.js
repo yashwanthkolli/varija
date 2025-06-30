@@ -33,7 +33,7 @@ router.get("/admin/", async (req, res) => {
 router.get("/:id", async (req, res) => {
     try {
         const prodId = req.params.id 
-        const prod = await Product.findOne({prodId, disabled: false})
+        const prod = await Product.findOne({prodId})
         res.json(prod)
     } catch (err) {
         console.error(err.message);
