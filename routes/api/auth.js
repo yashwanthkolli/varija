@@ -94,15 +94,6 @@ router.get("/user", auth, async (req, res) => {
   }
 });
 
-router.get("/cp", async (req, res) => {
-  try {
-    const data = sendMailjet()
-    res.status(200).send(data)
-  } catch (err) {
-    console.log(err)
-  }
-})
-
 // @desc    Forgot password
 // @route   POST /api/auth/changepassword
 // @access  Public

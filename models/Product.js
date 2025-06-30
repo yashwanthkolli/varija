@@ -44,6 +44,10 @@ const ProductSchema = new mongoose.Schema({
     bagWeight: {
         type: String,
         required: true
+    }, 
+    diabled: {
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps: true

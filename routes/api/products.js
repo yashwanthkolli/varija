@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const auth = require("../../middleware/auth");
+const authenticateAdmin = require("../../middleware/authenticateAdmin");
 
 const Product = require("../../models/Product")
 
@@ -9,7 +9,7 @@ const Product = require("../../models/Product")
 // @access   Public
 router.get("/", async (req, res) => {
   try {
-        const products = await Product.find();
+        const products = await Product.find({disabled: false});
         res.json(products)
   } catch (err) {
         console.error(err.message);
@@ -17,10 +17,31 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/admin/", async (req, res) => {
+    try {
+        const products = await Product.find({});
+        res.json(products)
+    } catch (err) {
+            console.error(err.message);
+            res.status(500).send("Server Error");
+    }
+})
+
 // @route    POST api/prod/:id
 // @desc     Create new product
 // @access   Public
 router.get("/:id", async (req, res) => {
+    try {
+        const prodId = req.params.id 
+        const prod = await Product.findOne({prodId, disabled: false})
+        res.json(prod)
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Server Error");
+    }
+});
+
+router.get("/admin/:id", async (req, res) => {
     try {
         const prodId = req.params.id 
         const prod = await Product.findOne({prodId})
@@ -34,7 +55,7 @@ router.get("/:id", async (req, res) => {
 // @route    POST api/prod
 // @desc     Create new product
 // @access   Public
-router.post("/", async (req,  res) => {
+router.post("/", authenticateAdmin, async (req,  res) => {
     try {
         const newProd = new Product({...req.body})
         await newProd.save()
@@ -43,6 +64,6 @@ router.post("/", async (req,  res) => {
         console.log(err.message)
         res.status(500).send("Server Error");
     }
-})
+});
 
 module.exports = router;
