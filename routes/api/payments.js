@@ -20,7 +20,7 @@ router.post('/initiate', async (req, res) => {
 
     const request = StandardCheckoutPayRequest.builder()
       .merchantOrderId(merchantOrderId)
-      .amount(1 * 100) // PhonePe expects amount in paise
+      .amount(amount * 100) // PhonePe expects amount in paise
       .redirectUrl(redirectUrl)
       .build();
 
