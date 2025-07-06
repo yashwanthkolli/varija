@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const crypto = require("crypto");
+const Order = require('../models/Order');
+const Cart = require('../models/Cart');
 
 const UserSchema = new mongoose.Schema({
   name: {
@@ -38,5 +40,15 @@ UserSchema.methods.getResetPasswordToken = function() {
 
   return resetToken;
 };
+
+// Delete related cart and orders before user is deleted
+UserSchema.pre('findOneAndDelete', async function(next) {
+  const user = await this.model.findOne(this.getFilter());
+  if (user) {
+    await Cart.deleteMany({ userId: user._id });
+    await Order.deleteMany({ userId: user._id });
+  }
+  next();
+});
 
 module.exports = User = mongoose.model("user", UserSchema);

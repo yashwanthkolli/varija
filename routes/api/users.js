@@ -73,4 +73,29 @@ router.post(
   }
 );
 
+// DELETE /api/users/:id
+router.post('/delete', async (req, res) => {
+  const { phone, password } = req.body;
+
+  try {
+    // 1. Find user by email
+    const user = await User.findOne({ phone });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // 2. Verify password
+    if (!password) return res.status(401).json({ message: 'Enter Password' });
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).json({ message: 'Incorrect password' });
+
+    // 3. Delete user (triggers cascading deletes)
+    await User.findOneAndDelete({ _id: user._id });
+
+    return res.status(200).json({ message: 'User, cart, and orders deleted successfully' });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 module.exports = router;
