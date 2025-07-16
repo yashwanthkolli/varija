@@ -57,6 +57,8 @@ router.post(
         }
       };
 
+      console.log(user)
+
       jwt.sign(
         payload,
         config.get("jwtSecret"),
@@ -68,6 +70,7 @@ router.post(
       );
     } catch (err) {
       console.error(err.message);
+      console.log(err);
       res.status(500).send("Server error");
     }
   }
