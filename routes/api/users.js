@@ -25,6 +25,7 @@ router.post(
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log(errors)
       return res.status(400).json({ errors: errors.array() });
     }
 
@@ -34,9 +35,7 @@ router.post(
       let user = await User.findOne({ phone });
 
       if (user) {
-        return res
-          .status(400)
-          .json({ errors: [{ msg: "User already exists" }] });
+        return res.status(400).json({ msg: "User already exists" });
       }
 
       user = new User({
@@ -57,8 +56,6 @@ router.post(
         }
       };
 
-      console.log(user)
-
       jwt.sign(
         payload,
         config.get("jwtSecret"),
@@ -69,8 +66,6 @@ router.post(
         }
       );
     } catch (err) {
-      console.error(err.message);
-      console.log(err);
       res.status(500).send("Server error");
     }
   }
