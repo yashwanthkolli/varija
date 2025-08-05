@@ -4,7 +4,6 @@ const bcrypt = require("bcryptjs");
 const auth = require("../../middleware/auth");
 const jwt = require("jsonwebtoken");
 const config = require("config");
-const sendEmail = require("../../utils/sendEmail");
 const sendMailjet = require("../../utils/mailjet");
 const crypto = require("crypto");
 const { check, validationResult } = require("express-validator");
@@ -40,7 +39,8 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { phone, password } = req.body;
+    // const { phone, password } = req.body;
+    const { phone } = req.body;
 
     try {
       let user = await User.findOne({ phone });
@@ -51,13 +51,13 @@ router.post(
           .json({ errors: [{ msg: "Invalid Credentials" }] });
       }
 
-      const isMatch = await bcrypt.compare(password, user.password);
+      // const isMatch = await bcrypt.compare(password, user.password);
 
-      if (!isMatch) {
-        return res
-          .status(400)
-          .json({ errors: [{ msg: "Invalid Credentials" }] });
-      }
+      // if (!isMatch) {
+      //   return res
+      //     .status(400)
+      //     .json({ errors: [{ msg: "Invalid Credentials" }] });
+      // }
 
       const payload = {
         user: {
@@ -68,7 +68,6 @@ router.post(
       jwt.sign(
         payload,
         config.get("jwtSecret"),
-        { expiresIn: 360000 },
         (err, token) => {
           if (err) throw err;
           res.json({ token });

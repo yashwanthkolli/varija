@@ -17,10 +17,10 @@ router.post(
       .not()
       .isEmpty(),
     check("phone", "Please include a valid phone number").exists(),
-    check(
-      "password",
-      "Please enter a password with 6 or more characters"
-    ).isLength({ min: 6 })
+    // check(
+    //   "password",
+    //   "Please enter a password with 6 or more characters"
+    // ).isLength({ min: 6 })
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -29,7 +29,8 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, phone, password } = req.body;
+    // const { name, phone, password } = req.body;
+    const { name, phone } = req.body;
 
     try {
       let user = await User.findOne({ phone });
@@ -41,12 +42,12 @@ router.post(
       user = new User({
         name,
         phone,
-        password
+        // password
       });
 
-      const salt = await bcrypt.genSalt(10);
+      // const salt = await bcrypt.genSalt(10);
 
-      user.password = await bcrypt.hash(password, salt);
+      // user.password = await bcrypt.hash(password, salt);
 
       await user.save();
 
@@ -59,7 +60,6 @@ router.post(
       jwt.sign(
         payload,
         config.get("jwtSecret"),
-        { expiresIn: 360000 },
         (err, token) => {
           if (err) throw err;
           res.json({ token });
